@@ -2,6 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from .serializers import RegisterSerializer, LoginSerializer
 
 from .models import User
 from .serializers import (
@@ -28,7 +31,7 @@ class RegisterView(APIView):
     Public. Registers a new user. Role defaults to viewer.
     """
     permission_classes = [AllowAny]
-
+    @swagger_auto_schema(request_body=RegisterSerializer)
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -51,7 +54,7 @@ class LoginView(APIView):
     Public. Returns JWT tokens on valid credentials.
     """
     permission_classes = [AllowAny]
-
+    @swagger_auto_schema(request_body=LoginSerializer)
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -94,6 +97,7 @@ class UserListView(APIView):
     Admin only. Lists all users in the system.
     """
     permission_classes = [IsAdmin]
+    @swagger_auto_schema(request_body=UserReadSerializer)
 
     def get(self, request):
         users = User.objects.all().order_by('-created_at')
@@ -132,7 +136,7 @@ class UserUpdateView(APIView):
     Admin only. Update a user's role or active status.
     """
     permission_classes = [IsAdmin]
-
+    @swagger_auto_schema(request_body=UserRoleUpdateSerializer)
     def patch(self, request, pk):
         try:
             user = User.objects.get(pk=pk)

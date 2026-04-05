@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema  # ← ADD THIS
 
 from .models import FinancialRecord
 from .serializers import (
@@ -38,7 +39,6 @@ class RecordListCreateView(APIView):
     def get(self, request):
         queryset = get_active_records()
 
-        # ✅ Apply filters
         filterset = FinancialRecordFilter(request.GET, queryset=queryset)
         if not filterset.is_valid():
             return Response({
@@ -49,7 +49,6 @@ class RecordListCreateView(APIView):
 
         filtered_qs = filterset.qs
 
-        # ✅ Paginate
         paginator = RecordPagination()
         page = paginator.paginate_queryset(filtered_qs, request)
 
@@ -65,10 +64,11 @@ class RecordListCreateView(APIView):
             }
         }, status=200)
 
+    @swagger_auto_schema(request_body=RecordCreateSerializer)  # ← ADD THIS
     def post(self, request):
         serializer = RecordCreateSerializer(
             data=request.data,
-            context={'request': request}  # ✅ pass request so serializer can get user
+            context={'request': request}
         )
         if serializer.is_valid():
             record = serializer.save()
@@ -117,6 +117,7 @@ class RecordDetailView(APIView):
             "data": RecordReadSerializer(record).data
         }, status=200)
 
+    @swagger_auto_schema(request_body=RecordUpdateSerializer)  # ← ADD THIS
     def patch(self, request, pk):
         record = self.get_object(pk)
         if not record:
@@ -150,7 +151,6 @@ class RecordDetailView(APIView):
                 "code": 404
             }, status=404)
 
-        # ✅ Soft delete — just flag it, never remove from DB
         record.is_deleted = True
         record.save()
 
