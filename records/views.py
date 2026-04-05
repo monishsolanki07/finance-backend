@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_yasg.utils import swagger_auto_schema  # ← ADD THIS
+from drf_yasg.utils import swagger_auto_schema  
 
 from .models import FinancialRecord
 from .serializers import (
