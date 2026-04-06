@@ -96,7 +96,6 @@ class UserListView(APIView):
     Admin only. Lists all users in the system.
     """
     permission_classes = [IsAdmin]
-    @swagger_auto_schema(request_body=UserReadSerializer)
 
     def get(self, request):
         users = User.objects.all().order_by('-created_at')

@@ -116,4 +116,14 @@ SIMPLE_JWT = {
 # ✅ CORS — allow all in dev, tighten in prod
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+        }
+    },
+    'USE_SESSION_AUTH': False,
+}
